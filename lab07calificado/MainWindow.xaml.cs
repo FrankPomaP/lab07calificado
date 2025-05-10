@@ -1,21 +1,10 @@
-﻿using System.Text;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using CapaEntidad;
 using CapaNegocio;
 
 namespace lab07calificado
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private NProduct nProduct;
@@ -23,29 +12,111 @@ namespace lab07calificado
         public MainWindow()
         {
             InitializeComponent();
-            // Inicializamos la capa de negocio
             nProduct = new NProduct();
+            CargarProductos();
         }
 
-        // Evento al hacer clic en el botón de filtro
-        private void btnFiltrar_Click(object sender, RoutedEventArgs e)
+        private void CargarProductos()
         {
-            // Obtener el texto ingresado en el TextBox
-            string nombre = txtNombre.Text;
+            var productos = nProduct.ListarProductos();
+            dataGridProductos.ItemsSource = productos;
+        }
 
-            // Verificar que el texto no esté vacío
+        private void BtnListar_Click(object sender, RoutedEventArgs e)
+        {
+            CargarProductos();
+        }
+
+        private void BtnFiltrar_Click(object sender, RoutedEventArgs e)
+        {
+            string nombre = txtNombre.Text.Trim();
+
             if (!string.IsNullOrWhiteSpace(nombre))
             {
-                // Llamamos al método de la capa de negocio para listar productos por nombre
                 var productosFiltrados = nProduct.ListarProductosPorNombre(nombre);
-
-                // Asignamos la lista filtrada al DataGrid
                 dataGridProductos.ItemsSource = productosFiltrados;
             }
             else
             {
-                // Si el nombre está vacío, podemos mostrar todos los productos
-                MessageBox.Show("Por favor ingrese un nombre para filtrar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Ingrese un nombre para filtrar.", "Advertencia", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void BtnInsertar_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var producto = new Products
+                {
+                    Name = txtNombre.Text,
+                    Price = decimal.Parse(txtPrecio.Text),
+                    Stock = int.Parse(txtStock.Text),
+                    Active = true
+                };
+
+                nProduct.InsertarProducto(producto);
+                MessageBox.Show("Producto insertado correctamente.");
+                CargarProductos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al insertar: " + ex.Message);
+            }
+        }
+
+        private void BtnActualizar_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataGridProductos.SelectedItem is Products productoSeleccionado)
+            {
+                try
+                {
+                    productoSeleccionado.Name = txtNombre.Text;
+                    productoSeleccionado.Price = decimal.Parse(txtPrecio.Text);
+                    productoSeleccionado.Stock = int.Parse(txtStock.Text);
+
+                    nProduct.ActualizarProducto(productoSeleccionado);
+                    MessageBox.Show("Producto actualizado.");
+                    CargarProductos();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al actualizar: " + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona un producto para actualizar.");
+            }
+        }
+
+        private void BtnEliminar_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataGridProductos.SelectedItem is Products productoSeleccionado)
+            {
+                MessageBoxResult result = MessageBox.Show("¿Estás seguro de eliminar este producto?", "Confirmación", MessageBoxButton.YesNo);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    nProduct.EliminarProducto(productoSeleccionado.ProductId);
+                    MessageBox.Show("Producto eliminado.");
+                    CargarProductos();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecciona un producto para eliminar.");
+            }
+        }
+
+        // Manejar la selección de productos en el DataGrid
+        private void DataGridProductos_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (dataGridProductos.SelectedItem is Products productoSeleccionado)
+            {
+                // Rellenar los campos con los datos del producto seleccionado
+                txtNombre.Text = productoSeleccionado.Name;
+                txtPrecio.Text = productoSeleccionado.Price.ToString();
+                txtStock.Text = productoSeleccionado.Stock.ToString();
             }
         }
     }

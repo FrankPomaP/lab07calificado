@@ -9,25 +9,37 @@ namespace CapaNegocio
     {
         private Dproducts dProduct = new Dproducts();
 
-        public List<Products> ListarProductosPorNombre(string nombre)
+        // ✅ Listar todos los productos
+        public List<Products> ListarProductos()
         {
-            // Obtener todos los productos de la capa de datos
-            var productos = dProduct.ListarProductos();
-
-            // Filtrar los productos que contienen el nombre dado
-            var productosFiltrados = productos.Where(x => x.Name.Contains(nombre)).ToList();
-
-            return productosFiltrados;
+            return dProduct.ListarProductos();
         }
 
-        // Método adicional para filtrar por precio mínimo
-        public List<Products> ListarProductosPorPrecio(decimal precioMinimo)
+        // ✅ Listar productos filtrados por nombre (contiene)
+        public List<Products> ListarProductosPorNombre(string nombre)
         {
             var productos = dProduct.ListarProductos();
+            return productos
+                .Where(p => p.Name.Contains(nombre, System.StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
 
-            var productosFiltrados = productos.Where(x => x.Price >= precioMinimo).ToList();
+        // ✅ Insertar un nuevo producto
+        public void InsertarProducto(Products producto)
+        {
+            dProduct.InsertarProducto(producto);
+        }
 
-            return productosFiltrados;
+        // ✅ Actualizar un producto existente
+        public void ActualizarProducto(Products producto)
+        {
+            dProduct.ActualizarProducto(producto);
+        }
+
+        // ✅ Eliminación lógica de un producto
+        public void EliminarProducto(int productId)
+        {
+            dProduct.EliminarProducto(productId);
         }
     }
 }

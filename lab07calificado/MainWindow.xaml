@@ -1,22 +1,47 @@
 ﻿<Window x:Class="lab07calificado.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:lab07calificado"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <!-- Contenedor principal -->
-        <StackPanel>
-            <!-- Filtro de búsqueda por nombre -->
-            <TextBox Name="txtNombre" Width="200" Margin="10" 
-                     VerticalContentAlignment="Center" HorizontalContentAlignment="Left" 
-                     Text="Buscar por nombre"/>
-            <Button Name="btnFiltrar" Content="Filtrar productos" Width="200" Margin="10" Click="btnFiltrar_Click"/>
+        Title="Gestión de Productos" Height="500" Width="500">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <!-- DataGrid para mostrar los productos -->
-            <DataGrid Name="dataGridProductos" Margin="10" AutoGenerateColumns="True" Height="200"/>
+        <!-- Formulario de producto -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="Nombre" Margin="0,5,0,0"/>
+            <TextBox x:Name="txtNombre" Width="300" />
+
+            <TextBlock Text="Precio" Margin="0,10,0,0"/>
+            <TextBox x:Name="txtPrecio" Width="300"/>
+
+            <TextBlock Text="Stock" Margin="0,10,0,0"/>
+            <TextBox x:Name="txtStock" Width="300"/>
+
+            <!-- Botones -->
+            <StackPanel Orientation="Horizontal" Margin="0,20,0,0" HorizontalAlignment="Center">
+                <Button Content="Listar" Width="80" Margin="5" Click="BtnListar_Click"/>
+                <Button Content="Filtrar" Width="80" Margin="5" Click="BtnFiltrar_Click"/>
+                <Button Content="Insertar" Width="80" Margin="5" Click="BtnInsertar_Click"/>
+                <Button Content="Actualizar" Width="80" Margin="5" Click="BtnActualizar_Click"/>
+                <Button Content="Eliminar" Width="80" Margin="5" Click="BtnEliminar_Click"/>
+            </StackPanel>
         </StackPanel>
+
+        <!-- Tabla de productos -->
+        <DataGrid x:Name="dataGridProductos" Grid.Row="1" 
+                  Margin="0" Height="300" 
+                  SelectionMode="Single" 
+                  AutoGenerateColumns="False" 
+                  SelectionChanged="DataGridProductos_SelectionChanged">
+            <!-- Definir las columnas manualmente para mostrar solo ProductId, Name, Price y Stock -->
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Product ID" Binding="{Binding ProductId}" Width="*" />
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Precio" Binding="{Binding Price}" Width="*" />
+                <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
